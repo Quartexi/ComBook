@@ -1,23 +1,24 @@
-import { Route, Routes, Navigate } from 'react-router-dom';
+import {Route, Routes, Navigate} from 'react-router-dom';
 import {LoginPage} from './pages/LoginPage';
 import {BookingPage} from './pages/BookingPage';
 
 export function requireAuth(Component) {
     return function AuthenticatedComponent(props) {
-        const isAuthenticated = false;
-        return isAuthenticated ? (
-            <Component {...props} />
-        ) : (
-            <Navigate to="/" replace />
-        );
+        const isAuthenticated = sessionStorage.getItem('isAuthenticated');
+        if (isAuthenticated === "true") {
+            return <Component {...props} />
+        } else {
+            return <Navigate to="/" replace/>
+        }
+
     };
 }
 
 function App() {
     return (
         <Routes>
-            <Route path="/" element={<LoginPage />} />
-            <Route path="/booking" element={<BookingPageWrapper />} />
+            <Route path="/" element={<LoginPage/>}/>
+            <Route path="/booking" element={<BookingPageWrapper/>}/>
         </Routes>
     );
 }

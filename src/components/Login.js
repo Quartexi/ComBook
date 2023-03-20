@@ -1,7 +1,9 @@
-import { useState } from 'react';
-import {Navigate} from "react-router-dom";
+import {useState} from 'react';
+import {useNavigate} from "react-router-dom";
 
 function Login() {
+    const navigate = useNavigate();
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
@@ -9,11 +11,10 @@ function Login() {
     function handleLogin(event) {
         event.preventDefault();
 
-        // Here you can implement your authentication logic,
-        // for example by making an API call to your backend.
-        if (username === 'user' && password === 'password') {
-            localStorage.setItem('isAuthenticated', true);
-            window.location.reload();
+        //api call for login info, return true or false
+        if (username === 'a' && password === 'a') {
+            sessionStorage.setItem('isAuthenticated', 'true');
+            navigate("/booking");
         } else {
             setError('Invalid username or password');
         }
