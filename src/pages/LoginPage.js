@@ -1,5 +1,6 @@
 import Login from "../components/Login";
 import {Navigate} from "react-router-dom";
+import React from "react";
 
 
 const LoginPage = () => {
