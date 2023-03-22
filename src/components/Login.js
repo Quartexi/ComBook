@@ -20,10 +20,29 @@ function Login() {
         }
     }
 
+    const callApi = async () => {
+        try {
+            const response = await fetch('http://localhost:5071/api/Workplace', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'DELETE, GET, OPTIONS, PATCH, POST, PUT, FETCH',
+                    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+                },
+                body: JSON.stringify({id: '1'})
+            }).then((response) => response.json());
+            console.log(response);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return (
         <div>
             <h2>Login</h2>
-            <form onSubmit={handleLogin}>
+            <form onSubmit={callApi}>
                 {error && <div>{error}</div>}
                 <div>
                     <label>
