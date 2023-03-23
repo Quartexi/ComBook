@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import React, {useState} from 'react';
 import {useNavigate} from "react-router-dom";
 
 function Login() {
@@ -11,18 +11,23 @@ function Login() {
     function handleLogin(event) {
         event.preventDefault();
 
-        //api call for login info, return true or false
-        if (username === 'a' && password === 'a') {
-            sessionStorage.setItem('isAuthenticated', 'true');
-            navigate("/booking");
-        } else {
-            setError('Invalid username or password');
-        }
+        callApi()
+            .then((login) => {
+                if (login) {
+                    sessionStorage.setItem('isAuthenticated', 'true');
+                    navigate("/booking");
+                } else {
+                    setError('Invalid username or password');
+                }
+            })
+            .catch((e) => {
+                console.log(e.message)
+            })
     }
 
     const callApi = async () => {
         try {
-            const response = await fetch('http://localhost:5071/api/Workplace', {
+            return await fetch('http://127.0.0.1:5071/api/Workplace', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -33,16 +38,16 @@ function Login() {
                 },
                 body: JSON.stringify({id: '1'})
             }).then((response) => response.json());
-            console.log(response);
         } catch (error) {
-            console.error(error);
+            setError('No Connection to Server');
+            return false;
         }
     }
 
     return (
         <div>
             <h2>Login</h2>
-            <form onSubmit={callApi}>
+            <form onSubmit={handleLogin}>
                 {error && <div>{error}</div>}
                 <div>
                     <label>
