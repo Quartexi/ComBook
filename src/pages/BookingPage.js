@@ -16,9 +16,9 @@ const BookingPage = () => {
 
     function SetFloor(floor) {
         getRooms(floor).then(async (response) => {
-            console.log("test");
             await setRooms(response);
             setSelectedOption(floor);
+            console.log(rooms);
         })
             .catch((e) => {
                 console.log(e.message);
@@ -43,7 +43,7 @@ const BookingPage = () => {
                     'Access-Control-Allow-Methods': 'DELETE, GET, OPTIONS, PATCH, POST, PUT, FETCH',
                     'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
                 },
-                body: JSON.stringify({floor: floor})
+                body: JSON.stringify({floor: floor, workplaceList: []})
             }).then((response) => response.json());
         } catch (error) {
             console.log(error)
@@ -60,19 +60,13 @@ const BookingPage = () => {
                 <div className="grid">
                     {selectedOption === "1" && (
                         <>
-                            <Room sizeX={500} sizeY={370} row={1} column={2} id={3}>
-                                <div className="grid-workplace">
-                                    <WorkPlace sizeX={40} sizeY={80} row={2} column={2}/>
-                                </div>
-                            </Room>
                             {rooms.map((room) => (
                                 <Room sizeX={room.sizeX} sizeY={room.sizeY} column={room.column} row={room.row}
                                       id={room.id}>
                                     <div className="grid-workplace">
-                                        <WorkPlace sizeX={40} sizeY={80} row={2} column={4}/>
-                                        <WorkPlace sizeX={40} sizeY={80} row={2} column={6}/>
-                                        <WorkPlace sizeX={40} sizeY={80} row={3} column={4}/>
-                                        <WorkPlace sizeX={40} sizeY={80} row={3} column={6}/>
+                                        {rooms.workplaceList.map((workplace) => (
+                                            <WorkPlace sizeX={workplace.sizeX} sizeY={workplace.sizeY} row={workplace.row} column={workplace.column}/>
+                                        ))}
                                     </div>
                                 </Room>
                             ))}
