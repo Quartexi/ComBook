@@ -13,16 +13,33 @@ const BookingPage = () => {
     ];
     const [selectedOption, setSelectedOption] = useState();
     const [rooms, setRooms] = useState([]);
+    const [date, setDate] = useState(new Date());
+    const [dateString, setDateString] = useState(new Date().toLocaleDateString("de-DE"));
 
     function SetFloor(floor) {
         getRooms(floor).then(async (response) => {
             await setRooms(response);
             setSelectedOption(floor);
-            console.log(rooms);
         })
             .catch((e) => {
                 console.log(e.message);
             })
+    }
+
+    const addDays = () => {
+        const dateTemp = date
+        dateTemp.setDate(date.getDate() + 1);
+        setDate(dateTemp);
+        setDateString(dateTemp.toLocaleDateString("de-DE"));
+    }
+
+    const subtractDays = () => {
+        if(dateString !== new Date().toLocaleDateString("de-DE")) {
+            const dateTemp = date
+            dateTemp.setDate(date.getDate() - 1);
+            setDate(dateTemp);
+            setDateString(dateTemp.toLocaleDateString("de-DE"));
+        }
     }
 
     function handleLogout(event) {
@@ -50,9 +67,34 @@ const BookingPage = () => {
         }
     }
 
+    const bookWorkplace = async () => {
+        try {
+            return await fetch('http://127.0.0.1:5071/api/Room/bookWorkplace', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'DELETE, GET, OPTIONS, PATCH, POST, PUT, FETCH',
+                    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+                },
+                body: JSON.stringify({username: 'username', workplaceId: '1'})
+            }).then((response) => response.json());
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return (
         <div>
             <h2>BookingPage</h2>
+
+            <h3>
+                <button onClick={subtractDays}>zurück</button>
+                {dateString}
+                <button onClick={addDays}>vor</button>
+            </h3>
+
             <form onSubmit={handleLogout}>
                 <button type="submit">Logout</button>
                 <Dropdown options={options} value={selectedOption} placeholder="Wähle eine Etage"
@@ -60,12 +102,13 @@ const BookingPage = () => {
                 <div className="grid">
                     {selectedOption === "1" && (
                         <>
-                            {rooms.map((room) => (
+                            {rooms.map((room, index) => (
                                 <Room sizeX={room.sizeX} sizeY={room.sizeY} column={room.column} row={room.row}
                                       id={room.id}>
                                     <div className="grid-workplace">
-                                        {rooms.workplaceList.map((workplace) => (
-                                            <WorkPlace sizeX={workplace.sizeX} sizeY={workplace.sizeY} row={workplace.row} column={workplace.column}/>
+                                        {rooms[index].workplaceList.map((workplace) => (
+                                            <WorkPlace sizeX={workplace.sizeX} sizeY={workplace.sizeY}
+                                                       row={workplace.row} column={workplace.column} id={workplace.id}/>
                                         ))}
                                     </div>
                                 </Room>
@@ -74,22 +117,30 @@ const BookingPage = () => {
                     )}
                     {selectedOption === "2" && (
                         <>
-                            {rooms.map((room) => (
+                            {rooms.map((room, index) => (
                                 <Room sizeX={room.sizeX} sizeY={room.sizeY} column={room.column} row={room.row}
                                       id={room.id}>
-                                    <WorkPlace sizeX={40} sizeY={80} row={1} column={1}/>
-                                    <WorkPlace sizeX={40} sizeY={80} row={2} column={2}/>
+                                    <div className="grid-workplace">
+                                        {rooms[index].workplaceList.map((workplace) => (
+                                            <WorkPlace sizeX={workplace.sizeX} sizeY={workplace.sizeY}
+                                                       row={workplace.row} column={workplace.column} id={workplace.id}/>
+                                        ))}
+                                    </div>
                                 </Room>
                             ))}
                         </>
                     )}
                     {selectedOption === "3" && (
                         <>
-                            {rooms.map((room) => (
+                            {rooms.map((room, index) => (
                                 <Room sizeX={room.sizeX} sizeY={room.sizeY} column={room.column} row={room.row}
                                       id={room.id}>
-                                    <WorkPlace sizeX={40} sizeY={80} row={1} column={1}/>
-                                    <WorkPlace sizeX={40} sizeY={80} row={2} column={2}/>
+                                    <div className="grid-workplace">
+                                        {rooms[index].workplaceList.map((workplace) => (
+                                            <WorkPlace sizeX={workplace.sizeX} sizeY={workplace.sizeY}
+                                                       row={workplace.row} column={workplace.column} id={workplace.id}/>
+                                        ))}
+                                    </div>
                                 </Room>
                             ))}
                         </>

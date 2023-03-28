@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import '../CSS/WorkPlace.css';
 
-const WorkPlace = ({sizeX, sizeY, row, column}) => {
+const WorkPlace = ({sizeX, sizeY, row, column, id}) => {
     const [clicked, setClicked] = useState(false);
     const [isHovering, setIsHovering] = useState(false);
 
@@ -11,7 +11,8 @@ const WorkPlace = ({sizeX, sizeY, row, column}) => {
         gridRow: `${row} / span 1`,
         gridColumn: `${column} / span 1`,
         backgroundColor: clicked ? 'green' : isHovering ? '#CCCCCC' : '#FFFFFF',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        id: id
     };
 
     const handleMouseEnter = () => {
@@ -24,7 +25,7 @@ const WorkPlace = ({sizeX, sizeY, row, column}) => {
 
     const handleClick = () => {
         setClicked(!clicked);
-        console.log('Div clicked');
+        console.log(id);
     };
 
     return (
