@@ -4,15 +4,17 @@ import WorkPlace from "../components/WorkPlace";
 import '../CSS/WorkPlace.css';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
-import {useState} from "react";
+import { useState} from "react";
 
 const BookingPage = () => {
     const navigate = useNavigate();
     const options = [
         '1', '2', '3'
     ];
+    const username = sessionStorage.getItem('username');
     const [selectedOption, setSelectedOption] = useState();
     const [rooms, setRooms] = useState([]);
+    const [workPlaceId, setWorkPlaceId] = useState(0);
     const [date, setDate] = useState(new Date());
     const [dateString, setDateString] = useState(new Date().toLocaleDateString("de-DE"));
 
@@ -26,27 +28,28 @@ const BookingPage = () => {
             })
     }
 
-    const addDays = () => {
-        const dateTemp = date
-        dateTemp.setDate(date.getDate() + 1);
-        setDate(dateTemp);
-        setDateString(dateTemp.toLocaleDateString("de-DE"));
-    }
-
-    const subtractDays = () => {
-        if(dateString !== new Date().toLocaleDateString("de-DE")) {
-            const dateTemp = date
-            dateTemp.setDate(date.getDate() - 1);
-            setDate(dateTemp);
-            setDateString(dateTemp.toLocaleDateString("de-DE"));
-        }
-    }
-
     function handleLogout(event) {
         event.preventDefault();
-
         sessionStorage.setItem('isAuthenticated', 'false');
         navigate("/");
+    }
+
+    const addDays = async () => {
+        const dateTemp = date;
+        await dateTemp.setDate(date.getDate() + 1);
+        await setDate(dateTemp);
+        await setDateString(dateTemp.toLocaleDateString("de-DE"));
+        await SetFloor(selectedOption);
+    };
+
+    const subtractDays = async () => {
+        if (dateString !== new Date().toLocaleDateString("de-DE")) {
+            const dateTemp = date;
+            await dateTemp.setDate(date.getDate() - 1);
+            await setDate(dateTemp);
+            await setDateString(dateTemp.toLocaleDateString("de-DE"));
+            await SetFloor(selectedOption);
+        }
     }
 
     const getRooms = async (floor) => {
@@ -60,10 +63,10 @@ const BookingPage = () => {
                     'Access-Control-Allow-Methods': 'DELETE, GET, OPTIONS, PATCH, POST, PUT, FETCH',
                     'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
                 },
-                body: JSON.stringify({floor: floor, workplaceList: []})
+                body: JSON.stringify({floor: floor, workplaceList: [{date: date.toLocaleDateString("de-DE")}]})
             }).then((response) => response.json());
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
 
@@ -78,10 +81,20 @@ const BookingPage = () => {
                     'Access-Control-Allow-Methods': 'DELETE, GET, OPTIONS, PATCH, POST, PUT, FETCH',
                     'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
                 },
-                body: JSON.stringify({username: 'username', workplaceId: '1'})
+                body: JSON.stringify({username: username, workplaceId: 1})
             }).then((response) => response.json());
         } catch (error) {
-            console.log(error)
+            console.log(error);
+        }
+    }
+
+    const bookid = (id) => {
+        if(workPlaceId === id) {
+            setWorkPlaceId(0);
+            //background color should go back to white from the one
+        } else {
+            setWorkPlaceId(id);
+            //backgroundcolor should switch to the otherone clicked
         }
     }
 
@@ -91,9 +104,12 @@ const BookingPage = () => {
 
             <h3>
                 <button onClick={subtractDays}>zurück</button>
-                {dateString}
+                {date.toLocaleDateString("de-DE")}
                 <button onClick={addDays}>vor</button>
             </h3>
+            <h2>
+                <button onClick={bookWorkplace}>Sitzplatz buchen</button>
+            </h2>
 
             <form onSubmit={handleLogout}>
                 <button type="submit">Logout</button>
@@ -108,7 +124,9 @@ const BookingPage = () => {
                                     <div className="grid-workplace">
                                         {rooms[index].workplaceList.map((workplace) => (
                                             <WorkPlace sizeX={workplace.sizeX} sizeY={workplace.sizeY}
-                                                       row={workplace.row} column={workplace.column} id={workplace.id}/>
+                                                       row={workplace.row} column={workplace.column} id={workplace.id}
+                                                       bookingid={workplace.bookingid}
+                                                       bookid={bookid}/>
                                         ))}
                                     </div>
                                 </Room>

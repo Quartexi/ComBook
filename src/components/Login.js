@@ -15,6 +15,7 @@ function Login() {
             .then((login) => {
                 if (login) {
                     sessionStorage.setItem('isAuthenticated', 'true');
+                    sessionStorage.setItem('username', username);
                     navigate("/booking");
                 } else {
                     setError('Invalid username or password');

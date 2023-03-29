@@ -5,7 +5,8 @@ import {BookingPage} from './pages/BookingPage';
 export function requireAuth(Component) {
     return function AuthenticatedComponent(props) {
         const isAuthenticated = sessionStorage.getItem('isAuthenticated');
-        if (isAuthenticated === "true") {
+        const username = sessionStorage.getItem('username');
+        if (isAuthenticated === "true" && username.length > 0) {
             return <Component {...props} />
         } else {
             return <Navigate to="/" replace/>
