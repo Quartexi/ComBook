@@ -1,10 +1,9 @@
 .workplace {
-    border-radius: 20%;
+    border-radius: 10%;
 }
 
 .grid-workplace {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    grid-gap: 20px;
+    grid-template-columns: repeat(30, 1fr);
+    grid-template-rows: repeat(70, 10px);
 }

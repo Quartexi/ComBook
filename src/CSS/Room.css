@@ -1,8 +1,16 @@
 .grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(5, 200px);
+    grid-column-gap: 0;
+    grid-row-gap: 0;
+    background-color: green;
+    min-width: 1920px;
 }
 
 .square {
-    background-color: blue;
+    background-color: lightgrey;
+    border: solid;
+    border-width: 1px;
+    border-color: black;
 }
