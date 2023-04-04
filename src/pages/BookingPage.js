@@ -6,6 +6,7 @@ import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import {useState} from "react";
 import {Button} from "react-bootstrap";
+import AlertDialog from "../components/AlertDialog";
 
 const BookingPage = () => {
     const navigate = useNavigate();
@@ -180,6 +181,9 @@ const BookingPage = () => {
         }
     }
 
+    const handleCloseDialog = () => {
+        setSpecialView(false);
+    }
 
     return (
         <div>
@@ -192,6 +196,9 @@ const BookingPage = () => {
             <h2>
                 <button onClick={bookWorkplace}>Sitzplatz buchen</button>
             </h2>
+            <AlertDialog specialViewCreated={specialViewCreated} specialViewDate={specialViewDate}
+                         specialViewWorkplaceId={specialViewWorkplaceId} specialViewUsername={specialViewUsername}
+                         specialView={specialView} specialViewDelete={specialViewDelete} deleteWorkplace={deleteWorkplace} open={specialView} onClose={handleCloseDialog}/>
             <div style={{justifyContent: "center"}}>
                 <form onSubmit={handleLogout} style={{justifySelf: "center"}}>
                     <button type="submit">Logout</button>
@@ -251,30 +258,6 @@ const BookingPage = () => {
                             </>
                         )}
                     </div>
-                    {specialView === true && (
-                        <>
-                            <div>
-                                <h2>
-                                    Erstellt Am: {specialViewCreated}
-                                </h2>
-                                <h2>
-                                    Für das Datum: {specialViewDate}
-                                </h2>
-                                <h2>
-                                    Sitzplatz: {specialViewWorkplaceId}
-                                </h2>
-                                <h2>
-                                    Username: {specialViewUsername}
-                                </h2>
-                                <Button onClick={() => setSpecialView(false)}>Schließen</Button>
-                                {specialViewDelete === true && (
-                                    <>
-                                        <Button onClick={deleteWorkplace}>Delete</Button>
-                                    </>
-                                )}
-                            </div>
-                        </>
-                    )}
                 </form>
             </div>
         </div>

@@ -31,8 +31,6 @@ const WorkPlace = ({sizeX, sizeY, row, column, id, bookingid, username, bookid, 
             bookid(id, clicked);
         } else {
             infoScreen(id, bookingid);
-            console.log(username);
-            console.log(usernameStorage);
         }
     };
 
