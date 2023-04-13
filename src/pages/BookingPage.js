@@ -4,9 +4,12 @@ import WorkPlace from "../components/WorkPlace";
 import '../CSS/WorkPlace.css';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
-import {useState} from "react";
-import {Button} from "react-bootstrap";
+import React, {useEffect, useState} from "react";
 import AlertDialog from "../components/AlertDialog";
+import Calendar from "react-calendar";
+import 'react-calendar/dist/Calendar.css';
+import Button from '@mui/material/Button';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const BookingPage = () => {
     const navigate = useNavigate();
@@ -17,7 +20,7 @@ const BookingPage = () => {
     const [selectedOption, setSelectedOption] = useState();
     const [rooms, setRooms] = useState([]);
     const [date, setDate] = useState(new Date());
-    const [dateString, setDateString] = useState(new Date().toLocaleDateString("de-DE"));
+    const [minDate] = useState(new Date());
 
     const [specialView, setSpecialView] = useState(false);
     const [specialViewCreated, setSpecialViewCreated] = useState();
@@ -27,14 +30,13 @@ const BookingPage = () => {
     const [specialViewUsername, setSpecialViewUsername] = useState();
     const [specialViewDelete, setSpecialViewDelete] = useState();
 
-
     const [clickedChildId, setClickedChildId] = useState(null);
 
     function SetFloor(floor) {
         getRooms(floor).then(async (response) => {
             await setRooms(response);
-            setSelectedOption(floor);
-            setSpecialView(false);
+            await setSelectedOption(floor);
+            await setSpecialView(false);
         })
             .catch((e) => {
                 console.log(e.message);
@@ -47,27 +49,17 @@ const BookingPage = () => {
         navigate("/");
     }
 
-    const addDays = async () => {
-        const dateTemp = date;
-        await dateTemp.setDate(date.getDate() + 1);
-        await setDate(dateTemp);
-        await setDateString(dateTemp.toLocaleDateString("de-DE"));
-        await SetFloor(selectedOption);
-        await setClickedChildId(null);
-    };
-
-    const subtractDays = async () => {
-        if (dateString !== new Date().toLocaleDateString("de-DE")) {
-            const dateTemp = date;
-            await dateTemp.setDate(date.getDate() - 1);
-            await setDate(dateTemp);
-            await setDateString(dateTemp.toLocaleDateString("de-DE"));
-            await setClickedChildId(null);
-            await SetFloor(selectedOption);
-        }
+    async function setDayCalender(value) {
+        await setDate(value);
     }
 
+    useEffect(() => {
+        SetFloor(selectedOption);
+        setClickedChildId(null);
+    }, [date, selectedOption]);
+
     const getRooms = async (floor) => {
+        console.log(date);
         try {
             return await fetch('http://127.0.0.1:5071/api/Room/getRooms', {
                 method: 'POST',
@@ -82,6 +74,7 @@ const BookingPage = () => {
                     floor: floor,
                     row: '',
                     column: '',
+                    name: '',
                     workplaceList: [{date: date.toLocaleDateString("de-DE"), username: ''}]
                 })
             }).then((response) => response.json());
@@ -91,6 +84,7 @@ const BookingPage = () => {
     }
 
     const bookWorkplace = async () => {
+        console.log(date.toLocaleDateString("de-DE"));
         try {
             return await fetch('http://127.0.0.1:5071/api/Booking/bookWorkplace', {
                 method: 'POST',
@@ -101,7 +95,11 @@ const BookingPage = () => {
                     'Access-Control-Allow-Methods': 'DELETE, GET, OPTIONS, PATCH, POST, PUT, FETCH',
                     'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
                 },
-                body: JSON.stringify({username: username, workplaceid: clickedChildId, date: date})
+                body: JSON.stringify({
+                    username: username,
+                    workplaceid: clickedChildId,
+                    date: date.toLocaleDateString("de-DE")
+                })
             }).then((response) => {
                 response.json();
                 SetFloor(selectedOption);
@@ -187,30 +185,37 @@ const BookingPage = () => {
 
     return (
         <div>
-            <h2>BookingPage</h2>
-            <h3>
-                <button onClick={subtractDays}>zurück</button>
-                {date.toLocaleDateString("de-DE")}
-                <button onClick={addDays}>vor</button>
-            </h3>
-            <h2>
-                <button onClick={bookWorkplace}>Sitzplatz buchen</button>
-            </h2>
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}>
+                <h1 style={{marginBottom: '1rem', letterSpacing: "10px", fontSize: "50px"}}>COMBOOK</h1>
+                <Calendar onChange={(e) => setDayCalender(e)} value={date}
+                          minDate={minDate}/>
+                <Button onClick={bookWorkplace}>Sitzplatz buchen</Button>
+            </div>
             <AlertDialog specialViewCreated={specialViewCreated} specialViewDate={specialViewDate}
                          specialViewWorkplaceId={specialViewWorkplaceId} specialViewUsername={specialViewUsername}
-                         specialView={specialView} specialViewDelete={specialViewDelete} deleteWorkplace={deleteWorkplace} open={specialView} onClose={handleCloseDialog}/>
+                         specialView={specialView} specialViewDelete={specialViewDelete}
+                         deleteWorkplace={deleteWorkplace} open={specialView} onClose={handleCloseDialog}/>
             <div style={{justifyContent: "center"}}>
                 <form onSubmit={handleLogout} style={{justifySelf: "center"}}>
-                    <button type="submit">Logout</button>
+                    <div style={{position: "relative", paddingRight: "20px"}}>
+                        <Button type="submit" variant="contained"
+                                color="primary"
+                                size="large" startIcon={<LogoutIcon/>}>Logout
+                        </Button>
+                    </div>
                     <Dropdown options={options} value={selectedOption} placeholder="Wähle eine Etage"
                               onChange={option => SetFloor(option.value)}/>
-                    <h1 style={{paddingLeft: "30%"}}>Eingang</h1>
-                    <div className="grid" style={{width: "90%"}}>
+                    <div className="grid">
                         {selectedOption === "1" && (
                             <>
                                 {rooms.map((room, index) => (
                                     <Room sizeX={room.sizeX} sizeY={room.sizeY} column={room.column} row={room.row}
-                                          id={room.id}>
+                                          id={room.id} name={room.name}>
                                         <div className="grid-workplace">
                                             {rooms[index].workplaceList.map((workplace) => (
                                                 <WorkPlace sizeX={workplace.sizeX} sizeY={workplace.sizeY}
@@ -229,12 +234,15 @@ const BookingPage = () => {
                             <>
                                 {rooms.map((room, index) => (
                                     <Room sizeX={room.sizeX} sizeY={room.sizeY} column={room.column} row={room.row}
-                                          id={room.id}>
+                                          id={room.id} name={room.name}>
                                         <div className="grid-workplace">
                                             {rooms[index].workplaceList.map((workplace) => (
                                                 <WorkPlace sizeX={workplace.sizeX} sizeY={workplace.sizeY}
                                                            row={workplace.row} column={workplace.column}
-                                                           id={workplace.id}/>
+                                                           id={workplace.id}
+                                                           bookingid={workplace.bookingid} username={workplace.username}
+                                                           bookid={bookid} infoScreen={infoScreen}
+                                                           clicked={workplace.id === clickedChildId}/>
                                             ))}
                                         </div>
                                     </Room>
@@ -245,12 +253,15 @@ const BookingPage = () => {
                             <>
                                 {rooms.map((room, index) => (
                                     <Room sizeX={room.sizeX} sizeY={room.sizeY} column={room.column} row={room.row}
-                                          id={room.id}>
+                                          id={room.id} name={room.name}>
                                         <div className="grid-workplace">
                                             {rooms[index].workplaceList.map((workplace) => (
                                                 <WorkPlace sizeX={workplace.sizeX} sizeY={workplace.sizeY}
                                                            row={workplace.row} column={workplace.column}
-                                                           id={workplace.id}/>
+                                                           id={workplace.id}
+                                                           bookingid={workplace.bookingid} username={workplace.username}
+                                                           bookid={bookid} infoScreen={infoScreen}
+                                                           clicked={workplace.id === clickedChildId}/>
                                             ))}
                                         </div>
                                     </Room>

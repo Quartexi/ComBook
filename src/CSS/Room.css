@@ -5,7 +5,7 @@
     grid-column-gap: 0;
     grid-row-gap: 0;
     background-color: green;
-    min-width: 1920px;
+    min-width: 1900px;
 }
 
 .square {
@@ -13,4 +13,17 @@
     border: solid;
     border-width: 1px;
     border-color: black;
+    position: relative;
+}
+
+.roomName {
+    color: blue;
+    font-family: Arial, sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    margin-top: 0;
+    opacity: 0.4;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
 }
