@@ -21,21 +21,21 @@ function AlertDialog({specialViewCreated, specialViewDate, specialViewWorkplaceI
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        <h2>
-                            Gebucht am: {specialViewCreated}
-                        </h2>
-                        <h2>
-                            Datum: {specialViewDate}
-                        </h2>
-                        <h2>
-                            Sitzplatz: {specialViewWorkplaceId}
-                        </h2>
+                        <h3>
+                            Gebucht am: {specialViewCreated} Uhr
+                        </h3>
+                        <h3>
+                            Für das Datum: {specialViewDate}
+                        </h3>
+                        <h3>
+                            Sitzplatz-Nr: {specialViewWorkplaceId}
+                        </h3>
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     {specialViewDelete === true && (
                         <>
-                            <Button onClick={deleteWorkplace}>Delete</Button>
+                            <Button onClick={deleteWorkplace}>Buchung Löschen</Button>
                         </>
                     )}
                     <Button onClick={onClose}>
